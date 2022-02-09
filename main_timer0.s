@@ -36,6 +36,13 @@ PROCESSOR 16F887
 // config statements should precede project file includes.
 #include <xc.inc>
 
+RESET_TMR0	MACRO	    TMR_VAR
+    BANKSEL TMR0	    ; cambiamos de banco
+    MOVLW   TMR_VAR
+    MOVWF   TMR0	    ; 50ms retardo
+    BCF	    T0IF	    ; limpiamos bandera de interrupción
+    ENDM  
+  
 PSECT resVect, class=CODE, abs, delta=2
 ORG 00h	    ; posición 0000h para el reset
 ;------------ VECTOR RESET --------------
@@ -58,7 +65,7 @@ LOOP:
     
     ; Cuando se activa la bandera de interrupción del TMR0 se ejectun estas instrucciones
     ;-- Programamos lo que queremos que el uC haga luego del retardo
-    CALL    RESET_TMR0
+    RESET_TMR0 61
     INCF    PORTD
     GOTO    LOOP
     ;...
@@ -88,12 +95,12 @@ CONFIG_TMR0:
     return 
 
 ; Cada vez que se cumple el tiempo del TMR0 es necesario reiniciarlo.
-RESET_TMR0:
+/*RESET_TMR0:
     BANKSEL TMR0	    ; cambiamos de banco
     MOVLW   61
     MOVWF   TMR0	    ; 50ms retardo
     BCF	    T0IF	    ; limpiamos bandera de interrupción
-    return
+    return */
     
  CONFIG_IO:
     BANKSEL ANSEL
